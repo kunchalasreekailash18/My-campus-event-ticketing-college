@@ -1,0 +1,14 @@
+{
+  "name": "campus-openmind-and-event-ticketing-platform",
+  "version": "1.0.0",
+  "description": "Full-stack Campus OpenMind and Event Ticketing Platform using HTML, CSS, JS, React, Node.js, Express and SQLite",
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "build:client": "cd client && npm run build",
+    "start": "cd server && node server.js",
+    "dev:server": "cd server && node server.js",
+    "dev:client": "cd client && npm run dev"
+  },
+  "keywords": ["campus", "openmind", "events", "ticketing", "react", "express", "sqlite"]
+}
+
