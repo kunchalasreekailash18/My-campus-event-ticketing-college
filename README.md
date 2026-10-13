@@ -1,123 +1,107 @@
-# 🎓 CampusPulse: Campus OpenMind & Event Ticketing Platform
+# 🎓 N.B.K.R.I.S.T CampusPulse: Events, Fests & OpenMind Portal
 
-A full-stack campus community portal built with **HTML5, CSS3, JavaScript (ES6+), React.js, Node.js, Express.js**, and **SQLite Database**.
-
----
-
-## 🌟 Key Features
-
-### 🎟️ 1. Campus Event Discovery & Ticketing
-- **Live Event Catalog**: Category filtering (`Tech & Coding`, `Cultural & Fest`, `Workshops`, `Sports`, `Career & Talks`) and live text search.
-- **Dynamic Seating & Pass Tiers**: Real-time capacity bar, ticket tiers (Free Student Passes, VIP Mentorship, Workshop Kits).
-- **Instant Booking Engine**: Collects student attendee info (Name, Roll Number / Student ID, Email, Department).
-- **Digital E-Ticket Pass**:
-  - Airline/Concert-style boarding pass layout.
-  - Dynamically generated SVG QR code with embedded validation payload.
-  - Formatted Print & Save as PDF functionality.
-- **My Tickets Wallet**: Search passes by student Roll Number or Email at any time.
-
-### 🧠 2. Campus OpenMind Sanctuary (Mental Wellness & Peer Support)
-- **Safe Student Discussions**:
-  - Filter by tags: `Mental Wellness`, `Academic Pressure`, `Career Doubts`, `Campus Life`, `Ideas & Clubs`.
-  - Toggle between **100% Anonymous Posting** (with animal aliases like `CalmKoala_92`, `QuietOtter_15`) and identified posting.
-- **Peer Empathy & Reactions**: Support upvotes, ❤️ Empathy, 💡 Helpful, and 🤝 Solidarity reactions.
-- **Nested Advice Threads**: Students and verified campus counselors can offer supportive advice.
-- **Campus Mood Pulse**:
-  - 5-point daily mood check-in (`Great`, `Good`, `Okay`, `Stressed`, `Overwhelmed`).
-  - Aggregated real-time campus mood breakdown bar and uplifting wellness quotes.
-- **3-Minute Guided Box Breathing**:
-  - Interactive neuroscience-backed 4-4-4-4 box breathing animation with expanding glowing circle to reduce exam panic.
-- **Confidential Counselor Booking**:
-  - Direct 1-on-1 confidential booking form for campus wellness center appointments.
-
-### ⚡ 3. Organizer Suite & QR Entrance Scanner
-- **Live KPI Dashboard**: Active events, tickets booked, attendee check-in rate, and community engagement metrics.
-- **Digital QR Ticket Scanner**:
-  - Validate ticket codes in real-time.
-  - Check in attendees and authorize entrance.
-  - Immediate duplicate entry prevention warning if a ticket has already been used.
-- **Publish Campus Events**: Custom title, tier pricing, capacity, schedule, and banner URL.
+An enterprise-grade, full-stack campus portal developed for **N.B.K.R. Institute of Science & Technology (Autonomous), Vidyanagar** using **HTML5, CSS3, JavaScript (ES6+), React.js, Node.js, Express.js**, and **SQLite Database**.
 
 ---
 
-## 🛠️ Tech Stack
+## 🌟 Key Capabilities & Requirements Implemented
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | React 18, HTML5, CSS3 (Modern Glassmorphic Design), Vite |
-| **Backend** | Node.js, Express.js (REST API, CORS, Static Serving) |
-| **Database** | SQLite (Pure JS/WASM engine with disk persistence to `server/data/campus.sqlite`) |
-| **Security & Utilities** | SVG QR Code Generator, Ticket Serial Generator, Duplicate Entry Blocker |
+### 1. 🔐 Dual Authentication System
+- **Student Registration & Login**:
+  - **First-Time Sign-Up**: Students provide `Full Name`, `Branch` (CSE, AIDS, AIML, IT, MECH, ECE, EEE, CIVIL), `College Email` (`@nbkrist.edu.in`), `Phone Number`, `Year of Study` (1st, 2nd, 3rd, 4th Year), and `Set Password`.
+  - **Account Protection**: Identity is locked to the authenticated student's session. No other student can register for events or post ideas on their behalf!
+- **Coordinator Role**:
+  - Authorized coordinators manage and add events for all branches.
+  - **Default Pre-set Coordinator Accounts**:
+    - **Coordinator 1**: Roll No: `24KB1A05W1` &bull; Password: `KAILASH@123` *(Kailash - Lead Coordinator)*
+    - **Coordinator 2**: Roll No: `24KB1A0597` &bull; Password: `9032416879`
+
+---
+
+### 2. 🏛️ Department Venues & Official Leadership Endorsements
+- **CSE Department Venues**:
+  - CSE events are strictly held in **Seminar Hall 1** or **Seminar Hall 2** with highlighted visual badges.
+- **Mandatory Footer Endorsements**:
+  - **All Events**: Correspondent **Sreenivasulu**
+  - **IEEE & CSE Events**: CSE Department HOD **Dr. Rajasekar Reddy**
+  - **Games / Physical Department Events**: Physical Department Head **Mallikarjuna**
+
+---
+
+### 3. 🎯 Branch & Year Participation Rules
+- **ISTE / IST Events**: Conducted by the **Mechanical Department (MECH)** with options for *MECH Only* or *All Branches*.
+- **IEEE Events**: Conducted by **CSE** with participation restricted to *CSE, AIDS, AIML, IT* or *All Branches*.
+- **Year Restrictions**: Events can be open to *All Years*, *1st Year*, *2nd Year*, *3rd Year*, *4th Year*, or *2nd, 3rd & 4th Year*.
+- Enforced at both the API layer and the UI prior to registration.
+
+---
+
+### 4. ⏱️ Automated Event Expiration (Time-Based)
+- Every event has a scheduled date, start time, and **end time**.
+- When an event's time has passed, it is **automatically removed / hidden** from the active events catalog.
+
+---
+
+### 5. 💻 Hackathon Group Registration & Payment Simulation
+- For Hackathon events:
+  - Students enter a **Team / Squad Name**.
+  - Provide group member details: Member 1 (Lead), Member 2, Member 3, and Member 4 with Name, Roll Number, and Branch.
+  - View guidelines and instructions before submission.
+  - Complete UPI / College Fee Portal payment simulation with transaction reference verification.
+
+---
+
+### 6. 💡 Campus OpenMind: Student Innovation & Project Forum
+- Authenticated students can pitch project ideas, post research concepts, discuss campus initiatives, and search for hackathon teammates.
+- Supports both identified student profiles (`Name`, `Branch`, `Year`) and privacy-preserving anonymous animal aliases.
 
 ---
 
 ## 🚀 Running the Project
 
-The server is currently running live on your system:
+The application is running live:
 
-- **Unified Web Application & API**: [http://localhost:5000](http://localhost:5000)
-- **Vite Hot-Reloading Frontend**: [http://localhost:3000](http://localhost:3000)
-- **API Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+- **Web Application & REST API**: [http://localhost:5000](http://localhost:5000)
+- **Vite Client Dev Server**: [http://127.0.0.1:3000](http://127.0.0.1:3000)
+- **API Health Endpoint**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
 
-### Commands to Run Manually:
+### Quick Start Commands:
 
 ```powershell
 # In c:\assignment_programs\campus-platform:
 
-# 1. Start backend server (port 5000)
+# Run the Express server (port 5000)
 cd server
 node server.js
 
-# 2. In a separate terminal, start Vite client dev server (port 3000)
+# In another terminal, run Vite client (port 3000)
 cd client
 npm run dev
 ```
 
 ---
 
-## 📂 Project Structure
+## 🐙 Pushing to Your GitHub Repository
 
-```
-campus-platform/
-├── package.json
-├── README.md
-├── server/
-│   ├── package.json
-│   ├── server.js              # Express app, static SPA serving & API endpoints
-│   ├── db.js                  # SQLite database wrapper with disk persistence
-│   ├── seed.js                # Initial mock events, tickets, forum posts & moods
-│   ├── data/
-│   │   └── campus.sqlite      # SQLite database file
-│   └── routes/
-│       ├── events.js          # Event catalog & CRUD
-│       ├── tickets.js         # Booking, verification & entrance check-in
-│       ├── openmind.js        # Posts, comments, upvotes & reactions
-│       ├── moods.js           # Daily mood pulse & counselor requests
-│       └── stats.js           # Organizer analytics overview
-└── client/
-    ├── package.json
-    ├── vite.config.js
-    ├── index.html
-    └── src/
-        ├── main.jsx
-        ├── App.jsx            # State coordinator, navigation tabs & modals
-        ├── index.css          # Design system & print stylesheet
-        ├── components/
-        │   ├── Navbar.jsx
-        │   ├── EventCatalog.jsx
-        │   ├── EventDetailModal.jsx
-        │   ├── TicketBookingModal.jsx
-        │   ├── TicketPass.jsx         # Boarding-pass e-ticket with QR code
-        │   ├── MyTicketsModal.jsx
-        │   ├── OpenMindForum.jsx      # Safe student discussions
-        │   ├── CreatePostModal.jsx
-        │   ├── MoodTracker.jsx        # Daily campus pulse
-        │   ├── BreathingWidget.jsx    # Guided relaxation tool
-        │   ├── CounselorBookingModal.jsx
-        │   ├── OrganizerPortal.jsx    # QR scanner & event manager
-        │   └── NotificationToast.jsx
-        └── utils/
-            ├── api.js                 # Frontend REST API client
-            └── qrGenerator.js         # Pure JS SVG QR code generator
+A Git repository has already been initialized and committed in this folder. To publish to your GitHub:
+
+```powershell
+cd c:\assignment_programs\campus-platform
+
+# 1. Add your remote GitHub repo URL
+git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPOSITORY_NAME>.git
+
+# 2. Push your master branch
+git branch -M main
+git push -u origin main
 ```
 
+---
+
+## 🔑 Default Login Credentials
+
+| Role | Identifier | Password | Access / Scope |
+|---|---|---|---|
+| **Lead Coordinator** | `24KB1A05W1` | `KAILASH@123` | Can create any branch event & access QR scanner |
+| **Student Coordinator** | `24KB1A0597` | `9032416879` | Can create any branch event & access QR scanner |
+| **Demo Student** | `saicharan.cse@nbkrist.edu.in` | `nbkr@123` | CSE 3rd Year Student &bull; Apply passes & pitch ideas |
