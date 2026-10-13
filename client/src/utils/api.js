@@ -60,6 +60,15 @@ export async function createEvent(eventData) {
   return handleResponse(res);
 }
 
+export async function cancelEvent(eventId) {
+  const res = await fetch(`${API_BASE}/events/${eventId}/cancel`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  return handleResponse(res);
+}
+
+
 // Tickets & Registration
 export async function bookTicket(bookingData) {
   const res = await fetch(`${API_BASE}/tickets/book`, {

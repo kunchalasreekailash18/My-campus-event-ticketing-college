@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getPlatformStats, verifyTicket, checkInTicket, createEvent, getEvents } from '../utils/api';
+import { getPlatformStats, verifyTicket, checkInTicket, createEvent, cancelEvent, getEvents } from '../utils/api';
+
 
 const CATEGORIES = [
   'IEEE Events',
@@ -38,6 +39,34 @@ const YEAR_OPTIONS = [
   '3rd & 4th Year'
 ];
 
+// Small helper component for coordinator credential card with show/hide password
+function CoordCard({ coord }) {
+  const [showPwd, setShowPwd] = React.useState(false);
+  return (
+    <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 14px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+      <div>
+        <div style={{ fontWeight: 700, color: '#1e3a8a', fontSize: '13px' }}>{coord.name}</div>
+        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>
+          Roll No: <strong>{coord.rollNo}</strong> &nbsp;|&nbsp; Branch: <strong>{coord.branch}</strong>
+        </div>
+        <div style={{ fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ color: '#64748b' }}>Password:</span>
+          <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', letterSpacing: showPwd ? '0' : '3px', color: '#1e293b' }}>
+            {showPwd ? coord.password : '••••••••'}
+          </code>
+          <button
+            onClick={() => setShowPwd(p => !p)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', padding: '0' }}
+            title={showPwd ? 'Hide password' : 'Show password'}
+          >
+            {showPwd ? '🙈' : '👁️'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OrganizerPortal({ currentUser, onOpenAuth, onNotification }) {
   const isCoordinator = currentUser && currentUser.role === 'coordinator';
 
@@ -66,6 +95,8 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
   const [instructions, setInstructions] = useState('');
   const [description, setDescription] = useState('');
   const [creating, setCreating] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
+
 
   useEffect(() => {
     loadData();
@@ -192,7 +223,25 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
     }
   };
 
+  const handleCancelEvent = async (ev) => {
+    if (!window.confirm(`⚠️ Are you sure you want to CANCEL the event:\n"${ev.title}"?\n\nThis action cannot be undone and the event will be hidden from students.`)) {
+      return;
+    }
+    setCancellingId(ev.id);
+    try {
+      const result = await cancelEvent(ev.id);
+      if (onNotification) onNotification(result.message || `Event "${ev.title}" cancelled.`, 'success');
+      await loadData();
+    } catch (err) {
+      if (onNotification) onNotification('Failed to cancel event: ' + err.message, 'error');
+      else alert('Failed to cancel event: ' + err.message);
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   // If not logged in as coordinator, show Coordinator Gatekeeper
+
   if (!isCoordinator) {
     return (
       <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '40px 24px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
@@ -205,11 +254,15 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
         </p>
 
         <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'left', marginBottom: '24px', fontSize: '13px' }}>
-          <div style={{ fontWeight: 700, color: '#1e1b4b', marginBottom: '6px' }}>
-            Authorized Coordinators:
+          <div style={{ fontWeight: 700, color: '#1e1b4b', marginBottom: '10px', fontSize: '14px' }}>
+            🔐 Authorized Coordinator Credentials:
           </div>
-          <div>&bull; <strong>24KB1A05W1</strong> (Kailash) &bull; Password: <code>KAILASH@123</code></div>
-          <div>&bull; <strong>24KB1A0597</strong> &bull; Password: <code>9032416879</code></div>
+          {[
+            { rollNo: '24KB1A05W1', name: 'Kailash (Lead Coordinator)', branch: 'CSE', password: 'KAILASH@123' },
+            { rollNo: '24KB1A0597', name: 'Student Coordinator', branch: 'CSE', password: '9032416879' }
+          ].map((coord, i) => (
+            <CoordCard key={i} coord={coord} />
+          ))}
         </div>
 
         <button className="btn btn-primary" onClick={onOpenAuth} style={{ padding: '10px 24px', fontSize: '14px' }}>
@@ -217,25 +270,34 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
         </button>
       </div>
     );
+
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1e3a8a' }}>
-            ⚡ Coordinator Management & Scanner Console
-          </h2>
-          <div style={{ fontSize: '13px', color: '#64748b' }}>
-            Logged in as: <strong>{currentUser.name}</strong> ({currentUser.roll_no}) &bull; Authorized to add events for any branch
+      {/* Coordinator Profile Card */}
+      <div style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)', color: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 800 }}>
+            {(currentUser.name || 'C')[0].toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize: '18px', fontWeight: 800 }}>{currentUser.name}</div>
+            <div style={{ fontSize: '13px', opacity: 0.85, marginTop: '2px' }}>
+              Roll No: <strong>{currentUser.roll_no}</strong> &nbsp;|&nbsp; Branch: <strong>{currentUser.branch || 'CSE'}</strong> &nbsp;|&nbsp; Role: <strong style={{ textTransform: 'capitalize' }}>{currentUser.role}</strong>
+            </div>
+            <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '2px' }}>
+              ✅ Authorized coordinator — full event management access granted
+            </div>
           </div>
         </div>
 
-        <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+        <button className="btn btn-primary" onClick={() => setShowCreateModal(true)} style={{ background: 'white', color: '#1e3a8a', fontWeight: 700 }}>
           <span>➕</span>
           <span>Add New Campus Event</span>
         </button>
       </div>
+
 
       {/* KPI Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '16px', marginBottom: '32px' }}>
@@ -402,11 +464,13 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
                 <th style={{ padding: '10px 12px' }}>Eligible Branches</th>
                 <th style={{ padding: '10px 12px' }}>Eligible Years</th>
                 <th style={{ padding: '10px 12px' }}>Seats</th>
+                <th style={{ padding: '10px 12px' }}>Status</th>
+                <th style={{ padding: '10px 12px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {eventsList.map((ev) => (
-                <tr key={ev.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <tr key={ev.id} style={{ borderBottom: '1px solid #f1f5f9', opacity: ev.status === 'cancelled' ? 0.55 : 1 }}>
                   <td style={{ padding: '12px', fontWeight: 600 }}>{ev.title}</td>
                   <td style={{ padding: '12px' }}>
                     <span className="cat-pill" style={{ fontSize: '11px', padding: '2px 8px' }}>
@@ -425,10 +489,37 @@ export default function OrganizerPortal({ currentUser, onOpenAuth, onNotificatio
                   <td style={{ padding: '12px' }}>
                     <strong>{ev.booked_seats}</strong> / {ev.total_seats}
                   </td>
+                  <td style={{ padding: '12px' }}>
+                    <span style={{
+                      fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '12px',
+                      background: ev.status === 'cancelled' ? '#fee2e2' : '#dcfce7',
+                      color: ev.status === 'cancelled' ? '#b91c1c' : '#166534'
+                    }}>
+                      {ev.status === 'cancelled' ? '🚫 Cancelled' : '✅ Active'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px' }}>
+                    {ev.status !== 'cancelled' ? (
+                      <button
+                        onClick={() => handleCancelEvent(ev)}
+                        disabled={cancellingId === ev.id}
+                        style={{
+                          fontSize: '11px', padding: '4px 10px', borderRadius: '8px',
+                          background: '#fef2f2', color: '#b91c1c', border: '1px solid #fca5a5',
+                          fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {cancellingId === ev.id ? 'Cancelling...' : '🚫 Cancel Event'}
+                      </button>
+                    ) : (
+                      <span style={{ color: '#94a3b8', fontSize: '11px' }}>—</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
         </div>
       </div>
 

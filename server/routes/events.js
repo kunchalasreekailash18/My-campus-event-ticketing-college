@@ -180,4 +180,24 @@ router.post('/', (req, res) => {
   }
 });
 
+// PATCH cancel event (Coordinator action)
+router.patch('/:id/cancel', (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const event = get('SELECT * FROM events WHERE id = ?', [eventId]);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    if (event.status === 'cancelled') {
+      return res.status(400).json({ error: 'Event is already cancelled' });
+    }
+    run('UPDATE events SET status = ? WHERE id = ?', ['cancelled', eventId]);
+    res.json({ success: true, message: `Event "${event.title}" has been cancelled.` });
+  } catch (err) {
+    console.error('Error cancelling event:', err);
+    res.status(500).json({ error: 'Failed to cancel event' });
+  }
+});
+
 module.exports = router;
+

@@ -199,9 +199,11 @@ function get(sql, params = []) {
 function run(sql, params = []) {
   if (!db) throw new Error('Database not initialized');
   db.run(sql, params);
-  saveDB();
+  // IMPORTANT: Read last_insert_rowid() BEFORE calling saveDB(),
+  // because db.export() (called inside saveDB) resets last_insert_rowid to 0.
   const lastIdRes = db.exec("SELECT last_insert_rowid() as id");
   const lastInsertRowid = lastIdRes.length && lastIdRes[0].values.length ? lastIdRes[0].values[0][0] : null;
+  saveDB();
   return { lastInsertRowid };
 }
 
