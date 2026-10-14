@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://my-campus-event-ticketing-college.onrender.com/api';
 
 async function handleResponse(res) {
   const data = await res.json().catch(() => ({}));
